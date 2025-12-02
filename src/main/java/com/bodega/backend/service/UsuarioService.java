@@ -1,20 +1,11 @@
 package com.bodega.backend.service;
 
-import com.bodega.backend.dto.AuthResponse;
-import com.bodega.backend.dto.LoginRequest;
-import com.bodega.backend.dto.RegisterRequest;
-import com.bodega.backend.dto.UsuarioDto;
-import com.bodega.backend.dto.UsuarioUpdateRequest;
+import com.bodega.backend.dto.*;
 import com.bodega.backend.model.Usuario;
 import com.bodega.backend.repository.UsuarioRepository;
 import com.bodega.backend.util.BusinessException;
-import com.bodega.backend.util.MapperUtil;
 import com.bodega.backend.util.NotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UsuarioService {
@@ -25,77 +16,95 @@ public class UsuarioService {
         this.repo = repo;
     }
 
+    public UsuarioDto registrar(RegisterRequest req) {
 
-    public List<UsuarioDto> listar() {
-        return repo.findAll()
-                .stream()
-                .map(MapperUtil::toDto)
-                .toList();
-    }
-
-
-
-    @Transactional
-    public UsuarioDto registrar(RegisterRequest request) {
-        if (request.email() == null || request.email().isBlank()) {
-            throw new BusinessException("Email es obligatorio");
+        if (repo.existsByEmail(req.email())) {
+            throw new BusinessException("El correo ya está registrado");
         }
-        if (request.password() == null || request.password().isBlank()) {
-            throw new BusinessException("Password es obligatorio");
+
+        if (repo.existsByUsername(req.username())) {
+            throw new BusinessException("El nombre de usuario ya está en uso");
         }
 
         Usuario u = new Usuario();
-        u.setNombre(request.nombre());
-        u.setEmail(request.email());
-        u.setUsername(request.username());   
-        u.setPasswordHash(request.password()); 
-        u.setActivo(true);
+        u.setNombre(req.nombre());
+        u.setEmail(req.email());
+        u.setUsername(req.username());
+        u.setPasswordHash(req.password());  
 
         Usuario guardado = repo.save(u);
-        return MapperUtil.toDto(guardado);
+
+        return new UsuarioDto(
+                guardado.getId(),
+                guardado.getNombre(),
+                guardado.getEmail(),
+                guardado.getUsername(),
+                guardado.isActivo()
+        );
     }
 
-    @Transactional(readOnly = true)
-    public AuthResponse login(LoginRequest request) {
-        if (request.email() == null || request.email().isBlank()
-                || request.password() == null || request.password().isBlank()) {
-            throw new BusinessException("Credenciales inválidas");
-        }
+    public AuthResponse login(LoginRequest req) {
 
-        Usuario u = repo.findByEmail(request.email())
+        Usuario u = repo.findByEmail(req.email())
                 .orElseThrow(() -> new BusinessException("Credenciales inválidas"));
 
-        if (!u.getPasswordHash().equals(request.password())) {
+        if (!u.getPasswordHash().equals(req.password())) {
             throw new BusinessException("Credenciales inválidas");
         }
-
-        String token = UUID.randomUUID().toString(); 
 
         return new AuthResponse(
                 u.getId(),
                 u.getNombre(),
-                u.getEmail(),
-                token
+                u.getUsername()
         );
     }
 
-     public Usuario obtenerEntidad(Long id) {
+    public UsuarioDto obtenerDto(Long id) {
+        Usuario u = obtenerEntidad(id);
+
+        return new UsuarioDto(
+                u.getId(),
+                u.getNombre(),
+                u.getEmail(),
+                u.getUsername(),
+                u.isActivo()
+        );
+    }
+
+    public Usuario obtenerEntidad(Long id) {
         return repo.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
     }
 
-    public UsuarioDto obtenerDto(Long id) {
-        return MapperUtil.toDto(obtenerEntidad(id));
-    }
-
-    @Transactional
     public UsuarioDto actualizar(Long id, UsuarioUpdateRequest req) {
-        Usuario u = obtenerEntidad(id);
-        if (req.nombre() != null) u.setNombre(req.nombre());
-        if (req.email() != null) u.setEmail(req.email());
-        if (req.username() != null) u.setUsername(req.username());
-        Usuario guardado = repo.save(u);
-        return MapperUtil.toDto(guardado);
-    }
 
+        Usuario u = obtenerEntidad(id);
+
+        if (req.email() != null) {
+            // verificar email duplicado, excepto el propio
+            if (!req.email().equals(u.getEmail()) &&
+                    repo.existsByEmail(req.email())) {
+                throw new BusinessException("El correo ya está registrado");
+            }
+            u.setEmail(req.email());
+        }
+
+        if (!req.username().equals(u.getUsername()) &&
+                repo.existsByUsername(req.username())) {
+            throw new BusinessException("El nombre de usuario ya está en uso");
+        }
+
+        u.setNombre(req.nombre());
+        u.setUsername(req.username());
+
+        Usuario actualizado = repo.save(u);
+
+        return new UsuarioDto(
+                actualizado.getId(),
+                actualizado.getNombre(),
+                actualizado.getEmail(),
+                actualizado.getUsername(),
+                actualizado.isActivo()
+        );
+    }
 }
