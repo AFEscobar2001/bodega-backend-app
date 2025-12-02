@@ -6,12 +6,14 @@ import java.time.LocalDateTime;
 public record MovimientoDto(
         Long id,
         Long productoId,
+        String productoNombre,
         Long bodegaId,
+        String bodegaNombre,
         Long usuarioId,
-        Long motivoId,
-        String tipo,
+        String usuarioNombre,
+        String tipo,          
         BigDecimal cantidad,
         String comentario,
         LocalDateTime createdAt,
-        Long refMovimientoId
+        Long refMovimientoId      
 ) {}

@@ -3,7 +3,6 @@ package com.bodega.backend.service;
 import com.bodega.backend.dto.CategoriaDto;
 import com.bodega.backend.model.Categoria;
 import com.bodega.backend.repository.CategoriaRepository;
-import com.bodega.backend.util.MapperUtil;
 import com.bodega.backend.util.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +18,14 @@ public class CategoriaService {
     }
 
     public List<CategoriaDto> listar() {
-        return repo.findAll().stream()
-                .map(MapperUtil::toDto)
+        return repo.findAll()
+                .stream()
+                .map(c -> new CategoriaDto(
+                        c.getId(),
+                        c.getNombre(),
+                        c.getDescripcion(),
+                        c.isActivo()
+                ))
                 .toList();
     }
 

@@ -40,17 +40,22 @@ public final class MapperUtil {
                 p.getCodigo(),
                 p.getNombre(),
                 p.getCategoria().getId(),
+                p.getCategoria().getNombre(),
                 p.getUnidadMedida().getId(),
-                p.isActivo()
+                p.getUnidadMedida().getCodigo(),
+                p.isActivo(),
+                p.getCreatedAt()
         );
     }
 
-    public static MotivoMovimientoDto toDto(MotivoMovimiento m) {
-        return new MotivoMovimientoDto(
-                m.getId(),
-                m.getCodigo(),
-                m.getTipo().name(),
-                m.getDescripcion()
+    public static BodegaDto toDto(Bodega b) {
+        return new BodegaDto(
+                b.getId(),
+                b.getNombre(),
+                b.getUbicacion(),
+                b.isActivo()
         );
     }
+
+    
 }

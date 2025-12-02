@@ -30,13 +30,9 @@ public class Movimiento {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "motivo_id")
-    private MotivoMovimiento motivo;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
-    private MovimientoTipo tipo; // IN, OUT, ADJUST, UNDO
+    private MovimientoTipo tipo; 
 
     @Column(nullable = false, precision = 18, scale = 3)
     private BigDecimal cantidad;
@@ -46,7 +42,7 @@ public class Movimiento {
 
     @OneToOne
     @JoinColumn(name = "ref_movimiento_id", unique = true)
-    private Movimiento refMovimiento; // para UNDO
+    private Movimiento refMovimiento; 
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -58,7 +54,6 @@ public class Movimiento {
         }
     }
 
-    // getters y setters
     public Long getId() { return id; }
     public Producto getProducto() { return producto; }
     public void setProducto(Producto producto) { this.producto = producto; }
@@ -66,8 +61,6 @@ public class Movimiento {
     public void setBodega(Bodega bodega) { this.bodega = bodega; }
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
-    public MotivoMovimiento getMotivo() { return motivo; }
-    public void setMotivo(MotivoMovimiento motivo) { this.motivo = motivo; }
     public MovimientoTipo getTipo() { return tipo; }
     public void setTipo(MovimientoTipo tipo) { this.tipo = tipo; }
     public BigDecimal getCantidad() { return cantidad; }

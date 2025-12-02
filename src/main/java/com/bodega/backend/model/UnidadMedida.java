@@ -11,12 +11,11 @@ public class UnidadMedida {
     private Long id;
 
     @Column(nullable = false, length = 20, unique = true)
-    private String codigo; // EA, BOX, KG, L
+    private String codigo; 
 
     @Column(nullable = false, length = 60)
     private String descripcion;
 
-    // getters y setters
     public Long getId() { return id; }
     public String getCodigo() { return codigo; }
     public void setCodigo(String codigo) { this.codigo = codigo; }

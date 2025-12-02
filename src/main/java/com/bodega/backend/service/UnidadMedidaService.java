@@ -3,7 +3,6 @@ package com.bodega.backend.service;
 import com.bodega.backend.dto.UnidadMedidaDto;
 import com.bodega.backend.model.UnidadMedida;
 import com.bodega.backend.repository.UnidadMedidaRepository;
-import com.bodega.backend.util.MapperUtil;
 import com.bodega.backend.util.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +18,13 @@ public class UnidadMedidaService {
     }
 
     public List<UnidadMedidaDto> listar() {
-        return repo.findAll().stream()
-                .map(MapperUtil::toDto)
+        return repo.findAll()
+                .stream()
+                .map(u -> new UnidadMedidaDto(
+                        u.getId(),
+                        u.getCodigo(),
+                        u.getDescripcion()
+                ))
                 .toList();
     }
 

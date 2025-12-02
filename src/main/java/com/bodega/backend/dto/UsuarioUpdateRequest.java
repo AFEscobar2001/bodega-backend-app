@@ -1,8 +1,7 @@
 package com.bodega.backend.dto;
 
-public record AuthResponse(
-        Long userId,
+public record UsuarioUpdateRequest(
         String nombre,
         String email,
-        String token
+        String username
 ) {}

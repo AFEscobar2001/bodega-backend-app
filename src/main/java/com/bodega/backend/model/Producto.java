@@ -38,7 +38,6 @@ public class Producto {
         }
     }
 
-    // getters y setters
     public Long getId() { return id; }
     public String getCodigo() { return codigo; }
     public void setCodigo(String codigo) { this.codigo = codigo; }

@@ -4,10 +4,10 @@ import java.math.BigDecimal;
 
 public record MovimientoCreateDto(
         Long productoId,
-        Long bodegaId,
+        Long bodegaOrigenId,
+        Long bodegaDestinoId,     
         Long usuarioId,
-        Long motivoId,
-        String tipo,
+        String tipo,          
         BigDecimal cantidad,
         String comentario
 ) {}

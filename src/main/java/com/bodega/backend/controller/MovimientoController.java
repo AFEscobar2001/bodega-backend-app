@@ -19,18 +19,12 @@ public class MovimientoController {
     }
 
     @PostMapping
-    public MovimientoDto registrar(@RequestBody MovimientoCreateDto dto) {
+    public MovimientoDto crear(@RequestBody MovimientoCreateDto dto) {
         return service.registrar(dto);
     }
 
-    @PostMapping("/{id}/undo")
-    public MovimientoDto deshacer(@PathVariable Long id,
-                                  @RequestParam("usuarioId") Long usuarioId) {
-        return service.deshacer(id, usuarioId);
-    }
-
     @GetMapping
-    public List<MovimientoDto> listarPorProducto(@RequestParam("productoId") Long productoId) {
+    public List<MovimientoDto> listarPorProducto(@RequestParam Long productoId) {
         return service.listarPorProducto(productoId);
     }
 }
